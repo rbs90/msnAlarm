@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,27 +19,46 @@ import java.io.IOException;
  * To change this template use File | Settings | File Templates.
  */
 public class Starter {
+    
+    private static String text = "";
+
+    
     public static void main(final String[] args) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader("account.txt"));
 
         String acc = reader.readLine();
         String pass = reader.readLine();
 
-        MsnMessenger messenger = MsnMessengerFactory.createMsnMessenger(acc, pass);
+        final MsnMessenger messenger = MsnMessengerFactory.createMsnMessenger(acc, pass);
         messenger.setSupportedProtocol(new MsnProtocol[] {MsnProtocol.MSNP12});
         messenger.login();
 
-        messenger.addContactListListener(new MsnContactListAdapter(){
+        for(String arg : args){
+            text += " " + arg;
+        }
+
+        //auto close after 10 sec
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                //messenger.logout();
+                System.exit(0);
+            }
+        }, 10000);
+        
+        messenger.addContactListListener(new MsnContactListAdapter() {
+
             public void contactListInitCompleted(MsnMessenger messenger) {
                 //get contacts in allow list
-                MsnContact[] contacts = messenger.getContactList().getContactsInList(MsnList.AL);
+                MsnContact[] contacts = messenger.getContactList()
+                        .getContactsInList(MsnList.AL);
 
-                //System.out.println("Contact count = " + contacts.length);
+                
                 for (int i = 0; i < contacts.length; i++) {
-                    //System.out.println(contacts[i].getFriendlyName() + " - " + contacts[i].getEmail());
-                    messenger.sendText(contacts[i].getEmail(), args[0]);
+                    messenger.sendText(contacts[i].getEmail(), text);
                 }
             }
+
         });
     }
 }
