@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jml-1.0b4-full">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jml-1.0b4-full.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
